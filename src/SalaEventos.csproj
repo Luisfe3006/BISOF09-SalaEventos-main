@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>SalaEventos</RootNamespace>
+    <AssemblyName>SalaEventos</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+  <GlobalAnalyzerConfigFiles Include="Metricas.globalconfig" />
+  <AdditionalFiles Include="CodeMetricsConfig.txt" />
+</ItemGroup>
+
+</Project>
