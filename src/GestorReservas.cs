@@ -13,13 +13,13 @@ public class GestorReservas
     private string archivoReservas = "reservas.csv";
     private string archivoComprobantes = "comprobantes";
 
-    // Estrategias de descuento por tipo de cliente.
-    private Dictionary<string, IDescuentoCliente> descuentos = new Dictionary<string, IDescuentoCliente>
+    // Estrategias de descuento por tipo de cliente. Las recibe desde afuera.
+    private Dictionary<string, IDescuentoCliente> descuentos;
+
+    public GestorReservas(Dictionary<string, IDescuentoCliente> descuentos)
     {
-        { "REGULAR", new DescuentoRegular() },
-        { "CORPORATIVO", new DescuentoCorporativo() },
-        { "ESTUDIANTIL", new DescuentoEstudiantil() }
-    };
+        this.descuentos = descuentos;
+    }
 
     // Un tipo sin estrategia registrada se trata como regular (sin descuento),
     // igual que el codigo original.
