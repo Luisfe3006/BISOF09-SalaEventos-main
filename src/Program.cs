@@ -4,7 +4,15 @@ public class Program
 {
     public static void Main(string[] args)
     {
-        GestorReservas gestor = new GestorReservas();
+        // Estrategias de descuento por tipo de cliente (patron Strategy)
+        Dictionary<string, IDescuentoCliente> descuentos = new Dictionary<string, IDescuentoCliente>
+        {
+            { "REGULAR", new DescuentoRegular() },
+            { "CORPORATIVO", new DescuentoCorporativo() },
+            { "ESTUDIANTIL", new DescuentoEstudiantil() }
+        };
+
+        GestorReservas gestor = new GestorReservas(descuentos);
         gestor.CargarDatosIniciales();
 
         DateTime martes = ProximoDiaDeSemana(DayOfWeek.Tuesday);
