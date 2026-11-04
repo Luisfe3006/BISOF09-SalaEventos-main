@@ -4,15 +4,7 @@ public class Program
 {
     public static void Main(string[] args)
     {
-        // Estrategias de descuento por tipo de cliente (patron Strategy)
-        Dictionary<string, IDescuentoCliente> descuentos = new Dictionary<string, IDescuentoCliente>
-        {
-            { "REGULAR", new DescuentoRegular() },
-            { "CORPORATIVO", new DescuentoCorporativo() },
-            { "ESTUDIANTIL", new DescuentoEstudiantil() }
-        };
-
-        GestorReservas gestor = new GestorReservas(descuentos);
+        GestorReservas gestor = new GestorReservas();
         gestor.CargarDatosIniciales();
 
         DateTime martes = ProximoDiaDeSemana(DayOfWeek.Tuesday);

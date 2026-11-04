@@ -1,8 +1,7 @@
 namespace SalaEventos;
 
 // Clase central del sistema. Hace validación, cálculo de precios, persistencia,
-// formato de comprobantes y reportes. El descuento por tipo de cliente lo
-// delega en una estrategia IDescuentoCliente.
+// formato de comprobantes y reportes.
 public class GestorReservas
 {
     public static List<Cliente> Clientes = new List<Cliente>();
@@ -12,22 +11,6 @@ public class GestorReservas
 
     private string archivoReservas = "reservas.csv";
     private string archivoComprobantes = "comprobantes";
-
-    // Estrategias de descuento por tipo de cliente. Las recibe desde afuera.
-    private Dictionary<string, IDescuentoCliente> descuentos;
-
-    public GestorReservas(Dictionary<string, IDescuentoCliente> descuentos)
-    {
-        this.descuentos = descuentos;
-    }
-
-    // Un tipo sin estrategia registrada se trata como regular (sin descuento),
-    // igual que el codigo original.
-    private IDescuentoCliente ObtenerDescuento(string tipo)
-    {
-        if (tipo != null && descuentos.ContainsKey(tipo)) { return descuentos[tipo]; }
-        return new DescuentoRegular();
-    }
 
     public void CargarDatosIniciales()
     {
@@ -81,19 +64,62 @@ public class GestorReservas
         // ---- calculo del precio ----
         decimal subtotal = sala.TarifaHora * horas;
 
-        // Descuento por duracion
         if (horas >= 8)
         {
             subtotal = subtotal - (subtotal * 0.15m);
+            if (cliente.Tipo == "CORPORATIVO")
+            {
+                subtotal = subtotal - (subtotal * 0.12m);
+                if (sala.Capacidad >= 100)
+                {
+                    subtotal = subtotal - (subtotal * 0.03m);
+                }
+            }
+            else
+            {
+                if (cliente.Tipo == "ESTUDIANTIL")
+                {
+                    if (fecha.DayOfWeek != DayOfWeek.Saturday && fecha.DayOfWeek != DayOfWeek.Sunday)
+                    {
+                        if (sala.Capacidad <= 30)
+                        {
+                            subtotal = subtotal - (subtotal * 0.20m);
+                        }
+                    }
+                }
+            }
         }
-        else if (horas >= 4)
+        else
         {
-            subtotal = subtotal - (subtotal * 0.10m);
+            if (horas >= 4)
+            {
+                subtotal = subtotal - (subtotal * 0.10m);
+                if (cliente.Tipo == "CORPORATIVO")
+                {
+                    subtotal = subtotal - (subtotal * 0.12m);
+                }
+                else
+                {
+                    if (cliente.Tipo == "ESTUDIANTIL")
+                    {
+                        if (fecha.DayOfWeek != DayOfWeek.Saturday && fecha.DayOfWeek != DayOfWeek.Sunday)
+                        {
+                            if (sala.Capacidad <= 30)
+                            {
+                                subtotal = subtotal - (subtotal * 0.20m);
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if (cliente.Tipo == "CORPORATIVO")
+                {
+                    subtotal = subtotal - (subtotal * 0.12m);
+                }
+            }
         }
-
-        // Descuento por tipo de cliente (patron Strategy)
-        IDescuentoCliente descuento = ObtenerDescuento(cliente.Tipo);
-        subtotal = descuento.Aplicar(subtotal, sala, fecha, horas);
 
         if (conCatering)
         {
