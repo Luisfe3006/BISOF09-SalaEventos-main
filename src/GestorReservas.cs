@@ -138,16 +138,25 @@ public class GestorReservas
             }
         }
 
-        if (fecha.DayOfWeek == DayOfWeek.Saturday || fecha.DayOfWeek == DayOfWeek.Sunday)
+        List<DateTime> festivos = new List<DateTime>
         {
-            subtotal = subtotal + (subtotal * 0.25m);
-        }
+            new DateTime(fecha.Year, 1, 1),
+            new DateTime(fecha.Year, 9, 15),
+            new DateTime(fecha.Year, 12, 1),
+            new DateTime(fecha.Year, 12, 25)
+        };
+        IRecargoFecha[] recargosFecha =
+        {
+            new RecargoFinDeSemana(),
+            new RecargoFestivo(festivos)
+        };
 
-        if ((fecha.Month == 9 && fecha.Day == 15) || (fecha.Month == 12 && fecha.Day == 25) ||
-            (fecha.Month == 12 && fecha.Day == 1) || (fecha.Month == 1 && fecha.Day == 1))
+        decimal recargos = 0m;
+        foreach (IRecargoFecha recargoFecha in recargosFecha)
         {
-            subtotal = subtotal + (subtotal * 0.40m);
+            recargos += recargoFecha.CalcularRecargo(fecha);
         }
+        subtotal += subtotal * recargos;
 
         decimal impuesto = subtotal * 0.13m;
         decimal total = subtotal + impuesto;
@@ -183,7 +192,7 @@ public class GestorReservas
             case "TEXTO":
                 comprobante = "COMPROBANTE DE RESERVA #" + reserva.Id + "\n" +
                               "Cliente: " + cliente.Nombre + "\n" +
-                "Sala: " + sala.Nombre + "\n" +
+                              "Sala: " + sala.Nombre + "\n" +
                               "Fecha: " + reserva.Fecha.ToString("dd/MM/yyyy") + " de " + reserva.HoraInicio + ":00 por " + reserva.Horas + " horas\n" +
                               "Subtotal: " + reserva.Subtotal + "\n" +
                               "Impuesto: " + reserva.Impuesto + "\n" +
